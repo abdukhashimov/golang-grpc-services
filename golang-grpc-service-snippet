@@ -1,0 +1,182 @@
+{
+	"create-srvc": {
+		"scope": "golang,go",
+		"prefix": "create-srvc",
+		"body": [
+			"func ($1 *$2) Create(ctx context.Context, req *$3) (*$4, error) {",
+				"var (",
+					"response $4",
+					"payload  $5",
+				")\n",
+
+				"$1.log.Info(utils.ReqFmt($1.name, msgs.CreateRequest), logger.Any(msgs.CreateRequest, req))\n",
+
+				"err := helper.MarshalUnmarshal(req, &payload)",
+				"if err = helper.HandleError($1.log, err, msgs.ErrUnmarshalError, req); err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"err = utils.ValidateStruct($1.log, msgs.ErrInvalidValue, payload)",
+				"if err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"res, err := g.db.$6().Create(ctx, payload)",
+				"if err = helper.HandleError($1.log, err, msgs.ErrDBCreate, req); err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"$1.log.Info(utils.ResFmt($1.name, msgs.CreateRequest), logger.String(msgs.Response, res))\n",
+
+				"response.Slug = res\n",
+
+				"return &response, nil",
+			"}\n",
+		],
+		"description": "grpc proto service code snippet for create function"
+	},
+	"update-srvc": {
+		"scope": "golang,go",
+		"prefix": "update-srvc",
+		"body": [
+			"func ($1 *$2) Update(ctx context.Context, req *$3) (*empty.Empty, error) {",
+				"var (",
+					"payload  $4",
+					"response emptypb.Empty",
+				")\n",
+
+				"$1.log.Info(utils.ReqFmt($1.name, msgs.UpdateRequest), logger.Any(msgs.UpdateRequest, req))\n",
+
+				"err := helper.MarshalUnmarshal(req, &payload)",
+				"if utils.HandleError($1.log, msgs.ErrUnmarshalError, err) {",
+					"return &response, err",
+				"}\n",
+
+				"err = utils.ValidateStruct($1.log, msgs.ErrInvalidValue, payload)",
+				"if err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"err = g.db.$5().Update(ctx, payload)",
+				"if err = helper.HandleError($1.log, err, msgs.ErrDBUpdate, req); err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"$1.log.Info(utils.ResFmt($1.name, msgs.UpdateRequest))\n",
+
+				"return &response, nil",
+			"}\n",
+		],
+		"description": "grpc proto service code snippet for update function"
+	},
+	"get-all-srvc": {
+		"scope": "golang,go",
+		"prefix": "get-all-srvc",
+		"body": [
+			"func ($1 *$2) GetAll(ctx context.Context, req *$3) (",
+				"*$4, error) {",
+				"var (",
+					"genreFilter $5",
+					"response    $4",
+				")\n",
+
+				"$1.log.Info(utils.ReqFmt($1.name, msgs.GetAllRequest), logger.Any(msgs.GetAllRequest, req))\n",
+
+				"err := helper.MarshalUnmarshal(req, &genreFilter)",
+				"if err := helper.HandleError($1.log, err, msgs.ErrUnmarshalError, req); err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"err = utils.ValidateStruct($1.log, msgs.ErrInvalidValue, genreFilter)",
+				"if err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"dbRes, count, err := g.db.$6().GetAll(ctx, genreFilter)",
+				"if err = helper.HandleError($1.log, err, msgs.ErrDBGetAll, req); err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"response.Count = count\n",
+
+				"err = helper.StructToProto(dbRes, &response.Objects)",
+				"if err = helper.HandleError($1.log, err, msgs.ErrConvFailedStructToProto, req); err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"$1.log.Info(utils.ResFmt($1.name, msgs.GetAllRequest), logger.Any(msgs.Response, count))\n",
+
+				"return &response, nil",
+			"}\n",
+		],
+		"description": "grpc proto service code snippet for get all function"
+	},
+	"get-srvc": {
+		"scope": "golang,go",
+		"prefix": "get-srvc",
+		"body": [
+			"func ($1 *$2) Get(ctx context.Context, req *$3) (",
+				"*$4, error) {",
+				"var (",
+					"resp $4",
+				")\n",
+
+				"$1.log.Info(utils.ReqFmt($1.name, msgs.GetRequest), logger.Any(msgs.GetRequest, req))\n",
+
+				"if err := utils.ValidateFields(g.log, msgs.ErrInvalidValue, req.Slug); err != nil {",
+					"return nil, err",
+				"}\n",
+
+				"if req.Lang == \"\" {",
+					"req.Lang = config.LangRu",
+				"}\n",
+
+				"dbRes, err := g.db.$5().Get(ctx, req.Slug, req.Lang)",
+				"err = helper.HandleError(g.log, err, msgs.ErrDBGet, req)\n",
+
+				"if err != nil {",
+					"return nil, err",
+				"}\n",
+
+				"err = helper.StructToProto(dbRes, &resp)",
+				"if err = helper.HandleError(g.log, err, msgs.ErrConvFailedStructToProto, req); err != nil {",
+					"return nil, err",
+				"}\n",
+
+				"$1.log.Info(utils.ResFmt($1.name, msgs.GetRequest))\n",
+
+				"return &resp, nil",
+			"}\n",
+		],
+		"description": "grpc proto service code snippet for get function"
+	},
+	"delete-srvc": {
+		"scope": "golang,go",
+		"prefix": "delete-srvc",
+		"body": [
+			"func ($1 *$2) Delete(ctx context.Context, req *$3) (",
+				"*empty.Empty, error) {",
+				"var (",
+					"response emptypb.Empty",
+				")\n",
+
+				"$1.log.Info(utils.ReqFmt($1.name, msgs.DeleteRequest), logger.Any(msgs.DeleteRequest, req))\n",
+
+				"err := utils.ValidateFields(g.log, msgs.ErrInvalidValue, req.Slug)",
+				"if err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"err = g.db.$4().Delete(ctx, req.Slug)",
+				"if err = helper.HandleError(g.log, err, msgs.ErrDBDelete, req); err != nil {",
+					"return &response, err",
+				"}\n",
+
+				"$1.log.Info(utils.ResFmt($1.name, msgs.DeleteRequest))\n",
+
+				"return &response, nil",
+			"}\n",
+		],
+		"description": "grpc proto service code snippet for delete function"
+	},
+}
