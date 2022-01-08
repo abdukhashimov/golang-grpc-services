@@ -9,24 +9,24 @@
 					"payload  $5",
 				")\n",
 
-				"$1.log.Info(utils.ReqFmt($1.name, msgs.CreateRequest), logger.Any(msgs.CreateRequest, req))\n",
+				"$1.args.log.Info(utils.ReqFmt($1.args.name, msgs.CreateRequest), logger.Any(msgs.CreateRequest, req))\n",
 
 				"err := helper.MarshalUnmarshal(req, &payload)",
-				"if err = helper.HandleError($1.log, err, msgs.ErrUnmarshalError, req); err != nil {",
+				"if err = helper.HandleError($1.args.log, err, msgs.ErrUnmarshalError, req); err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"err = utils.ValidateStruct($1.log, msgs.ErrInvalidValue, payload)",
+				"err = utils.ValidateStruct($1.args.log, msgs.ErrInvalidValue, payload)",
 				"if err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"res, err := g.db.$6().Create(ctx, payload)",
-				"if err = helper.HandleError($1.log, err, msgs.ErrDBCreate, req); err != nil {",
+				"res, err := $1.args.db.$6().Create(ctx, payload)",
+				"if err = helper.HandleError($1.args.log, err, msgs.ErrDBCreate, req); err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"$1.log.Info(utils.ResFmt($1.name, msgs.CreateRequest), logger.String(msgs.Response, res))\n",
+				"$1.args.log.Info(utils.ResFmt($1.args.name, msgs.CreateRequest), logger.String(msgs.Response, res))\n",
 
 				"response.Slug = res\n",
 
@@ -45,24 +45,24 @@
 					"response emptypb.Empty",
 				")\n",
 
-				"$1.log.Info(utils.ReqFmt($1.name, msgs.UpdateRequest), logger.Any(msgs.UpdateRequest, req))\n",
+				"$1.args.log.Info(utils.ReqFmt($1.args.name, msgs.UpdateRequest), logger.Any(msgs.UpdateRequest, req))\n",
 
 				"err := helper.MarshalUnmarshal(req, &payload)",
-				"if utils.HandleError($1.log, msgs.ErrUnmarshalError, err) {",
+				"if utils.HandleError($1.args.log, msgs.ErrUnmarshalError, err) {",
 					"return &response, err",
 				"}\n",
 
-				"err = utils.ValidateStruct($1.log, msgs.ErrInvalidValue, payload)",
+				"err = utils.ValidateStruct($1.args.log, msgs.ErrInvalidValue, payload)",
 				"if err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"err = g.db.$5().Update(ctx, payload)",
-				"if err = helper.HandleError($1.log, err, msgs.ErrDBUpdate, req); err != nil {",
+				"err = $1.args.db.$5().Update(ctx, payload)",
+				"if err = helper.HandleError($1.args.log, err, msgs.ErrDBUpdate, req); err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"$1.log.Info(utils.ResFmt($1.name, msgs.UpdateRequest))\n",
+				"$1.args.log.Info(utils.ResFmt($1.args.name, msgs.UpdateRequest))\n",
 
 				"return &response, nil",
 			"}\n",
@@ -80,31 +80,31 @@
 					"response    $4",
 				")\n",
 
-				"$1.log.Info(utils.ReqFmt($1.name, msgs.GetAllRequest), logger.Any(msgs.GetAllRequest, req))\n",
+				"$1.args.log.Info(utils.ReqFmt($1.args.name, msgs.GetAllRequest), logger.Any(msgs.GetAllRequest, req))\n",
 
 				"err := helper.MarshalUnmarshal(req, &genreFilter)",
-				"if err := helper.HandleError($1.log, err, msgs.ErrUnmarshalError, req); err != nil {",
+				"if err := helper.HandleError($1.args.log, err, msgs.ErrUnmarshalError, req); err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"err = utils.ValidateStruct($1.log, msgs.ErrInvalidValue, genreFilter)",
+				"err = utils.ValidateStruct($1.args.log, msgs.ErrInvalidValue, genreFilter)",
 				"if err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"dbRes, count, err := g.db.$6().GetAll(ctx, genreFilter)",
-				"if err = helper.HandleError($1.log, err, msgs.ErrDBGetAll, req); err != nil {",
+				"dbRes, count, err := $1.args.db.$6().GetAll(ctx, genreFilter)",
+				"if err = helper.HandleError($1.args.log, err, msgs.ErrDBGetAll, req); err != nil {",
 					"return &response, err",
 				"}\n",
 
 				"response.Count = count\n",
 
 				"err = helper.StructToProto(dbRes, &response.Objects)",
-				"if err = helper.HandleError($1.log, err, msgs.ErrConvFailedStructToProto, req); err != nil {",
+				"if err = helper.HandleError($1.args.log, err, msgs.ErrConvFailedStructToProto, req); err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"$1.log.Info(utils.ResFmt($1.name, msgs.GetAllRequest), logger.Any(msgs.Response, count))\n",
+				"$1.args.log.Info(utils.ResFmt($1.args.name, msgs.GetAllRequest), logger.Any(msgs.Response, count))\n",
 
 				"return &response, nil",
 			"}\n",
@@ -121,9 +121,9 @@
 					"resp $4",
 				")\n",
 
-				"$1.log.Info(utils.ReqFmt($1.name, msgs.GetRequest), logger.Any(msgs.GetRequest, req))\n",
+				"$1.args.log.Info(utils.ReqFmt($1.args.name, msgs.GetRequest), logger.Any(msgs.GetRequest, req))\n",
 
-				"if err := utils.ValidateFields(g.log, msgs.ErrInvalidValue, req.Slug); err != nil {",
+				"if err := utils.ValidateFields($1.args.log, msgs.ErrInvalidValue, req.Slug); err != nil {",
 					"return nil, err",
 				"}\n",
 
@@ -131,19 +131,19 @@
 					"req.Lang = config.LangRu",
 				"}\n",
 
-				"dbRes, err := g.db.$5().Get(ctx, req.Slug, req.Lang)",
-				"err = helper.HandleError(g.log, err, msgs.ErrDBGet, req)\n",
+				"dbRes, err := $1.args.db.$5().Get(ctx, req.Slug, req.Lang)",
+				"err = helper.HandleError($1.args.log, err, msgs.ErrDBGet, req)\n",
 
 				"if err != nil {",
 					"return nil, err",
 				"}\n",
 
 				"err = helper.StructToProto(dbRes, &resp)",
-				"if err = helper.HandleError(g.log, err, msgs.ErrConvFailedStructToProto, req); err != nil {",
+				"if err = helper.HandleError($1.args.log, err, msgs.ErrConvFailedStructToProto, req); err != nil {",
 					"return nil, err",
 				"}\n",
 
-				"$1.log.Info(utils.ResFmt($1.name, msgs.GetRequest))\n",
+				"$1.args.log.Info(utils.ResFmt($1.args.name, msgs.GetRequest))\n",
 
 				"return &resp, nil",
 			"}\n",
@@ -160,19 +160,19 @@
 					"response emptypb.Empty",
 				")\n",
 
-				"$1.log.Info(utils.ReqFmt($1.name, msgs.DeleteRequest), logger.Any(msgs.DeleteRequest, req))\n",
+				"$1.args.log.Info(utils.ReqFmt($1.args.name, msgs.DeleteRequest), logger.Any(msgs.DeleteRequest, req))\n",
 
-				"err := utils.ValidateFields(g.log, msgs.ErrInvalidValue, req.Slug)",
+				"err := utils.ValidateFields($1.args.log, msgs.ErrInvalidValue, req.Slug)",
 				"if err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"err = g.db.$4().Delete(ctx, req.Slug)",
-				"if err = helper.HandleError(g.log, err, msgs.ErrDBDelete, req); err != nil {",
+				"err = $1.args.db.$4().Delete(ctx, req.Slug)",
+				"if err = helper.HandleError($1.args.log, err, msgs.ErrDBDelete, req); err != nil {",
 					"return &response, err",
 				"}\n",
 
-				"$1.log.Info(utils.ResFmt($1.name, msgs.DeleteRequest))\n",
+				"$1.args.log.Info(utils.ResFmt($1.args.name, msgs.DeleteRequest))\n",
 
 				"return &response, nil",
 			"}\n",
